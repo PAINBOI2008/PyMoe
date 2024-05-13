@@ -4,7 +4,7 @@ version = "2.2"
 description = "This is Pymoe. The only python library you'll need if you need information on Anime, Manga, Light Novels, or Visual Novels."
 authors = ["Charles Click <CharlesClick@vertinext.com>"]
 readme = "README.md"
-packages = [{include="Pymoe"}]
+packages = [{include="pymoe"}]
 
 [tool.poetry.group.documentation]
 optional = true

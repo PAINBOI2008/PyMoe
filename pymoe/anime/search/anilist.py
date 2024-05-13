@@ -5,6 +5,8 @@ import requests
 from pymoe.utils.errors import serializationFailed, serverError
 from pymoe.utils.helpers import anilistWrapper
 
+from symbol import term
+
 settings = {
     "header": {
         "Content-Type": "application/json",
@@ -368,6 +370,52 @@ def studios(term: str, page: int = 1, perPage: int = 3):
             else:
                 return jsd["data"]["Page"]["studios"]
 
+def airing(term: str):
+    """
+    Search for airing(anime) that match the term in the API.
+
+    :param term: Search Term
+    """
+    query_string = """
+    query ($query: String){ 
+        Media ($query: String{ 
+        id
+        episodes
+        title{
+            romaji
+            english
+            native
+        }
+        nextAiringEpisode{
+            airingAt
+            timeUntilAiring
+            episode
+        } 
+        }
+    }
+    """
+    json_params = {
+            "query": query_string,
+            "variables": {"query": term},
+        }
+    r = requests.post(settings["apiurl"], headers=settings["header"], json=json_params)
+
+    try:
+        jsd = ujson.loads(r.text)
+    except ValueError as e:
+        raise serializationFailed(r.text, r.status_code) from e
+    else:
+        if "errors" in jsd:
+            raise serverError(r.text, r.status_code)
+        if jsd["data"]["hasNextPage"]:
+            return anilistWrapper(
+                jsd["data"]["media"],
+                json_params,
+                settings["header"],
+                settings["apiurl"],
+            )
+        else:
+            return jsd["data"]["media"]
 
 def airingSchedule(item_id: int):
     """
