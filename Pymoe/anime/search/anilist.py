@@ -123,6 +123,7 @@ def shows(term: str, page: int = 1, perPage: int = 3):
                     }
                     averageScore
                     popularity
+                    description
                     episodes
                     season
                     hashtag
